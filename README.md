@@ -8,6 +8,19 @@
 # CVM #
 Chime Virtual Machine, is a project the aims to provide a simple VM for retro computers and homemade CPUs. This would allow people to program them in a higher level language.
 
+## Features 
+- [ ] Comments
+- [ ] Print
+- [ ] Variables
+    - [ ] Strings
+    - [ ] Ints
+    - [ ] Bytes
+    - [ ] Lists
+    - [ ] Booleans
+    - [ ] Pointers
+- [ ] Objects 
+- [ ] targets
+
 
 
 [contributors-shield]: https://img.shields.io/github/contributors/himehowareu/CVM.svg?style=for-the-badge
