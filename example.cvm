@@ -1,0 +1,6 @@
+"this is a test" println # this will print this is a test
+"what is your name ?" println
+input "welcome " print println
+1 2 add println
+6 1 2 2 swap add println
+
