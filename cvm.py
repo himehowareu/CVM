@@ -22,3 +22,7 @@ def main(programFile: str = "example.cvm"):
         if not runs(token):
             FrameStack.append(token)
         log("stack:", FrameStack)
+
+
+if __name__ == "__main__":
+    main()
