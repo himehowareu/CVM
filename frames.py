@@ -1,9 +1,10 @@
+from helper import log
 
-
-class __frame__:
+class __frame__(object):
     def __init__(self,type_,token):
         self.value=token
         self.type=type_
+        log("created ",type(self))
     def __repr__(self) -> str:
         return str(self.value)
 
@@ -24,7 +25,6 @@ class F_String(__frame__):
 
 class F_Unknown(__frame__):
     def __init__(self,token):
-        print(token)
         exit("##### ran into unknown frame #####")
         super().__init__("unknown", token)
 
@@ -38,6 +38,7 @@ def __is_float(element:str)->bool:
 
 #types: string int float
 def frame(token:str)->__frame__:
+    log("token",token)
     if token.isnumeric():
         return F_Integer(token)
     if __is_float(token):
