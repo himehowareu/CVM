@@ -1,7 +1,7 @@
 from filters import passes
 from func import runs
 from stack import CodeStack, FrameStack
-from helper import debuging,log
+from helper import debuging, log
 
 # debuging = True
 
