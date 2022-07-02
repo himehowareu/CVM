@@ -1,5 +1,7 @@
+from typing import Callable
 
-passes = []
+
+passes: list[tuple[Callable, str]] = []
 
 
 def addPass(comment):
@@ -13,7 +15,7 @@ def addPass(comment):
 
 
 @addPass("removing comments")
-def removeComments(source:str) -> str:
+def removeComments(source: str) -> str:
     out = ""
     comment = False
     for letter in source:
@@ -28,12 +30,12 @@ def removeComments(source:str) -> str:
 
 
 @addPass("Padding new lines")
-def padNewLines(source:str)-> str:
+def padNewLines(source: str) -> str:
     return source.replace("\n", " \n ")
 
 
 @addPass("Splitting commands and joining strings")
-def splitCode(source:str) -> list[str]:
+def splitCode(source: str) -> list[str]:
     out = []
     string = False
     current = ""
@@ -53,6 +55,7 @@ def splitCode(source:str) -> list[str]:
             out.append(token)
     return out
 
+
 @addPass("removing whitespace and stuff")
-def removeJunk(source:list[str])->list[str]:
+def removeJunk(source: list[str]) -> list[str]:
     return [out for out in source if out not in ["", "\n", "\t"]]
