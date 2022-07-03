@@ -4,3 +4,4 @@ input "welcome " print println
 1 2 add println
 6 1 2 2 swap add println
 
+!dump
