@@ -5,3 +5,5 @@ input "welcome " print println
 6 1 2 2 swap add println
 
 !dump
+
+func times 2 

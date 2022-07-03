@@ -114,3 +114,14 @@ def True_():
 @addCommand("False", 0)
 def False_():
     FrameStack.push(F_Integer(0))
+
+
+@addCommand("drop", 0)
+def drop():
+    FrameStack.pop()
+
+
+@addCommand("dropx", 1)
+def dropx():
+    x: int = FrameStack.pop().value
+    FrameStack = FrameStack[:x]
