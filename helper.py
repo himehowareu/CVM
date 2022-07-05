@@ -24,3 +24,18 @@ def command(token: str) -> bool:
     if com == "func":
         pprint(FunctionStack)
     return False
+
+
+def getTokensTill(token: str):
+    import Data
+
+    temp: str = ""
+    while True:
+        temp = Data.CodeStack.pop()
+        if temp == token:
+            break
+        else:
+            if len(Data.FunctionStack) > 0:
+                Data.FunctionStack = [temp] + Data.FunctionStack
+            else:
+                Data.FunctionStack = [temp]

@@ -3,6 +3,7 @@ from typing import Callable
 from frames import *
 import Data
 from helper import command
+import helper
 
 functions: list[tuple[str, int, Callable]] = []
 
@@ -15,6 +16,7 @@ def runs(token: str) -> bool:
                     exit("Error while parsestring tokens")
                 return True
             else:
+                print("Error on token: " + token)
                 exit("FrameStack was not sett up correctly")
     return False
 
@@ -130,16 +132,8 @@ def dropx():
 
 @addCommand("if", 1)
 def if_():
-    temp = ""
-    while True:
-        temp = Data.CodeStack.pop()
-        if temp == "endIf":
-            break
-        else:
-            if len(Data.FunctionStack) > 0:
-                Data.FunctionStack = [temp] + Data.FunctionStack
-            else:
-                Data.FunctionStack = [temp]
+    helper.getTokensTill("endIf")
+
     if Data.FrameStack.pop().value > 0:
         Data.CodeStack.extend(Data.FunctionStack)
     Data.FunctionStack = []
@@ -152,17 +146,8 @@ def stackSize():
 
 @addCommand("def", 0)
 def FuncDef():
-    temp: str = ""
     name: str = Data.CodeStack.pop()
-    while True:
-        temp = Data.CodeStack.pop()
-        if temp == "endDef":
-            break
-        else:
-            if len(Data.FunctionStack) > 0:
-                Data.FunctionStack = [temp] + Data.FunctionStack
-            else:
-                Data.FunctionStack = [temp]
+    helper.getTokensTill("endDef")
     Data.CallData[name] = Data.FunctionStack.copy()
     Data.FunctionStack = []
 
@@ -172,3 +157,26 @@ def runFunc():
     name: str = Data.CodeStack.pop()
     code: list[str] = Data.CallData[name]
     Data.CodeStack.extend(code)
+
+
+@addCommand("loop", 0)
+def loop():
+    helper.getTokensTill("do")
+    setup: list[str] = Data.FunctionStack[::-1]
+    Data.FunctionStack = []
+    helper.getTokensTill("endLoop")
+    code: list[str] = Data.FunctionStack[::-1]
+    Data.FunctionStack = []
+    temp = (
+        [
+            "def",
+            "loop",
+        ]
+        + setup
+        + [
+            "if",
+        ]
+        + code
+        + ["func", "loop", "endIf", "endDef", "func", "loop"]
+    )
+    Data.CodeStack.extend(temp[::-1])

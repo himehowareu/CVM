@@ -1,35 +1,11 @@
-1 2 3 4 5 6  
+1 2 3 4 5 6
 
-stackSize
 
-def test
-"this is a test" println
-endDef
-
+loop 1 stackSize GT do
 println
+endLoop
 
+"what is your name? " print
+input 
 
-def printAll
-1 stackSize GT if
-println func printAll
-endIf
-endDef
-
-func printAll
-
-"john" True
-
-if
-
-println 2 3 add println
-
-endIf
-
-func test
-func test
-func test
-
-"done" "done"
-println
-
-!dump
+"welcome " print println
