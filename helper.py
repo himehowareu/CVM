@@ -39,3 +39,12 @@ def getTokensTill(token: str):
                 Data.FunctionStack = [temp] + Data.FunctionStack
             else:
                 Data.FunctionStack = [temp]
+
+
+def reset():
+    import Data
+
+    Data.CodeStack = []
+    Data.FrameStack = Data.Stack()
+    Data.FunctionStack = []
+    Data.CallData = {}
