@@ -1,7 +1,8 @@
+from tempfile import TemporaryDirectory
 from typing import Callable
-from stack import FrameStack
 from frames import *
-
+import Data
+from helper import command
 
 functions: list[tuple[str, int, Callable]] = []
 
@@ -9,7 +10,7 @@ functions: list[tuple[str, int, Callable]] = []
 def runs(token: str) -> bool:
     for fun in functions:
         if token == fun[0]:
-            if len(FrameStack) >= fun[1]:
+            if len(Data.FrameStack) >= fun[1]:
                 if fun[2]():
                     exit("Error while parsestring tokens")
                 return True
@@ -30,98 +31,144 @@ def addCommand(name, args):
 
 @addCommand("print", 1)
 def print_():
-    print(FrameStack.pop(), end="")
+    print(Data.FrameStack.pop(), end="")
 
 
 @addCommand("println", 1)
 def print_newline():
-    print(FrameStack.pop())
+    print(Data.FrameStack.pop())
 
 
 @addCommand("input", 0)
 def input_():
-    FrameStack.push(F_String(input()))
+    Data.FrameStack.push(F_String(input()))
 
 
 @addCommand("add", 2)
 def add_():
-    a = FrameStack.pop()
-    b = FrameStack.pop()
+    a = Data.FrameStack.pop()
+    b = Data.FrameStack.pop()
     if a.type == b.type:
-        FrameStack.push(a.__class__(a.value + b.value))
+        Data.FrameStack.push(a.__class__(a.value + b.value))
 
 
 @addCommand("min", 2)
 def min_():
-    a = FrameStack.pop()
-    b = FrameStack.pop()
+    a = Data.FrameStack.pop()
+    b = Data.FrameStack.pop()
     if a.type == b.type:
-        FrameStack.push(a.__class__(a.value - b.value))
+        Data.FrameStack.push(a.__class__(a.value - b.value))
 
 
 @addCommand("clone", 1)
 def clone():
-    a = FrameStack.pop()
-    FrameStack.push(a)
-    FrameStack.push(a)
+    a = Data.FrameStack.pop()
+    Data.FrameStack.push(a)
+    Data.FrameStack.push(a)
 
 
 @addCommand("swap", 1)
 def swap():
-    a = FrameStack.pop()
+    a = Data.FrameStack.pop()
     if a.type == "Integer":
-        b = FrameStack.pop()
-        c = FrameStack[-a.value]
-        FrameStack[-a.value] = b
-        FrameStack.push(c)
+        b = Data.FrameStack.pop()
+        c = Data.FrameStack[-a.value]
+        Data.FrameStack[-a.value] = b
+        Data.FrameStack.push(c)
     else:
         return True
 
 
 @addCommand("EQ", 2)
 def EQ():
-    a = FrameStack.pop()
-    b = FrameStack.pop()
-    FrameStack.push(a.__class__(a.value == b.value))
+    a = Data.FrameStack.pop()
+    b = Data.FrameStack.pop()
+    Data.FrameStack.push(a.__class__(a.value == b.value))
 
 
 @addCommand("LT", 2)
 def LT():
-    a = FrameStack.pop()
-    b = FrameStack.pop()
-    FrameStack.push(a.__class__(a.value < b.value))
+    a = Data.FrameStack.pop()
+    b = Data.FrameStack.pop()
+    Data.FrameStack.push(a.__class__(a.value < b.value))
 
 
 @addCommand("GT", 2)
 def GT():
-    a = FrameStack.pop()
-    b = FrameStack.pop()
-    FrameStack.push(a.__class__(a.value > b.value))
+    a = Data.FrameStack.pop()
+    b = Data.FrameStack.pop()
+    Data.FrameStack.push(a.__class__(a.value > b.value))
 
 
 @addCommand("NT", 2)
 def NT():
-    a = FrameStack.pop()
-    b = FrameStack.pop()
-    FrameStack.push(a.__class__(a.value != b.value))
+    a = Data.FrameStack.pop()
+    b = Data.FrameStack.pop()
+    Data.FrameStack.push(a.__class__(a.value != b.value))
 
 
 @addCommand("True", 0)
 def True_():
-    FrameStack.push(F_Integer(1))
+    Data.FrameStack.push(F_Integer(1))
 
 
 @addCommand("False", 0)
 def False_():
-    FrameStack.push(F_Integer(0))
+    Data.FrameStack.push(F_Integer(0))
 
 
 @addCommand("drop", 0)
 def drop():
-    FrameStack.pop()
+    Data.FrameStack.pop()
 
 
 @addCommand("dropx", 1)
 def dropx():
-    x: int = FrameStack.pop().value
-    FrameStack = FrameStack[:x]
+    x: int = Data.FrameStack.pop().value
+    Data.FrameStack = Data.FrameStack[:x]
+
+
+@addCommand("if", 1)
+def if_():
+    temp = ""
+    while True:
+        temp = Data.CodeStack.pop()
+        if temp == "endIf":
+            break
+        else:
+            if len(Data.FunctionStack) > 0:
+                Data.FunctionStack = [temp] + Data.FunctionStack
+            else:
+                Data.FunctionStack = [temp]
+    if Data.FrameStack.pop().value > 0:
+        Data.CodeStack.extend(Data.FunctionStack)
+    Data.FunctionStack = []
+
+
+@addCommand("stackSize", 0)
+def stackSize():
+    Data.FrameStack.append(str(len(Data.FrameStack)))
+
+
+@addCommand("def", 0)
+def FuncDef():
+    temp: str = ""
+    name: str = Data.CodeStack.pop()
+    while True:
+        temp = Data.CodeStack.pop()
+        if temp == "endDef":
+            break
+        else:
+            if len(Data.FunctionStack) > 0:
+                Data.FunctionStack = [temp] + Data.FunctionStack
+            else:
+                Data.FunctionStack = [temp]
+    Data.CallData[name] = Data.FunctionStack.copy()
+    Data.FunctionStack = []
+
+
+@addCommand("func", 0)
+def runFunc():
+    name: str = Data.CodeStack.pop()
+    code: list[str] = Data.CallData[name]
+    Data.CodeStack.extend(code)

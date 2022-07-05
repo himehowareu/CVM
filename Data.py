@@ -11,3 +11,5 @@ class Stack(list):
 
 CodeStack: list[str] = []
 FrameStack = Stack()
+FunctionStack: list[str] = []
+CallData: dict[str, list[str]] = {}

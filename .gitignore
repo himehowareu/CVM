@@ -4,3 +4,4 @@
 __pycache__
 test_cvm.py
 .gitignore
+watcher.py

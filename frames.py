@@ -29,9 +29,15 @@ class F_String(__frame__):
         super().__init__("String", value)
 
 
+class F_Command(__frame__):
+    def __init__(self, token):
+        value = token
+        super().__init__("Command", value)
+
+
 class F_Unknown(__frame__):
     def __init__(self, token):
-        exit("##### ran into unknown frame #####")
+        exit("##### ran into unknown frame  [%s] #####" % (token))
         super().__init__("unknown", token)
 
 
@@ -43,13 +49,25 @@ def __is_float(element: str) -> bool:
         return False
 
 
+def __codeCheck__(token: str) -> bool:
+    from func import functions
+
+    for fun in functions:
+        if fun[0] == token:
+            return True
+    return False
+
+
 # types: string int float
 def frame(token: str) -> __frame__:
     log("token", token)
+    # print(token)
     if token.isnumeric():
         return F_Integer(token)
     if __is_float(token):
         return F_Float(token)
     if token.startswith('"') and token.endswith('"'):
         return F_String(token)
+    if __codeCheck__(token):
+        return F_Command(token)
     return F_Unknown(token)

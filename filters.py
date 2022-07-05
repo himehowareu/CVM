@@ -51,6 +51,10 @@ def splitCode(source: str) -> list[str]:
         elif token.startswith('"'):
             string = True
             current = token
+            if token.endswith('"'):
+                string = False
+                out.append(token)
+                current = ""
         else:
             out.append(token)
     return out
@@ -58,4 +62,8 @@ def splitCode(source: str) -> list[str]:
 
 @addPass("removing whitespace and stuff")
 def removeJunk(source: list[str]) -> list[str]:
-    return [out for out in source if out not in ["", "\n", "\t"]]
+    out = []
+    for line in source:
+        if line not in ["", "\n", "\t"]:
+            out.append(line)
+    return out
