@@ -5,3 +5,5 @@ __pycache__
 test_cvm.py
 .gitignore
 watcher.py
+.pytest_cache
+notes.txt
