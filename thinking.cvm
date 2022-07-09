@@ -1,0 +1,13 @@
+StackNumber makeStack
+StackNumber clearStack
+StackNumber PullStack
+StackNumber PuchStack
+StackNumber StackNumber clone
+StackNumber StackNumber swapStack 
+FileName StackNumber readfile
+FileName StackNumber Terminator writefile
+Terminator StackNumber splitStack
+function StackNumber MapStack
+StackNumber StackNumber number memcopy
+command systemCall
+StackNumber index StackNumber index copy
