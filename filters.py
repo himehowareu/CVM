@@ -1,11 +1,19 @@
+from ast import Call
 from typing import Callable
 
 
 passes: list[tuple[Callable, str]] = []
 
 
-def addPass(comment):
-    def dec(func):
+def addPass(comment: str) -> Callable:
+    """
+    adds the pass to the list with it's comment
+
+    :param comment: A string that describes what the pass does
+    :return: the original function
+    """
+
+    def dec(func: Callable) -> Callable:
         global passes
         pass_ = (func, comment)
         passes.append(pass_)
@@ -16,6 +24,13 @@ def addPass(comment):
 
 @addPass("removing comments")
 def removeComments(source: str) -> str:
+    """
+    It removes comments from the source code
+
+    :param source: list[str]
+    :type source: list[str]
+    :return: the filtered source
+    """
     out = ""
     comment = False
     for letter in source:
@@ -31,6 +46,13 @@ def removeComments(source: str) -> str:
 
 @addPass("Padding new lines")
 def padNewLines(source: str) -> str:
+    """
+    It pads the newlines in the source code
+
+    :param source: list[str]
+    :type source: list[str]
+    :return: the filtered source
+    """
     return source.replace("\n", " \n ")
 
 
@@ -62,6 +84,13 @@ def splitCode(source: str) -> list[str]:
 
 @addPass("removing whitespace and stuff")
 def removeJunk(source: list[str]) -> list[str]:
+    """
+    It removes empty lines from the source code
+
+    :param source: list[str]
+    :type source: list[str]
+    :return: the filtered source
+    """
     out = []
     for line in source:
         if line not in ["", "\n", "\t"]:

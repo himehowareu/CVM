@@ -1,13 +1,20 @@
 from pprint import pprint
 from filters import passes
+from frames import frameData
 from func import runs
 import Data
-from helper import debuging, log, command
+from helper import debuging, log, debugCommand, help
 
 # debuging = True
 
 
 def main(programFile: str = "example.cvm"):
+    """
+    Takes a file to parse, filters and then runs the code
+
+    :param programFile: The file to run, defaults to example.cvm
+    :type programFile: str (optional)
+    """
     with open(programFile, "r") as file:
         code: str = file.read()
 
@@ -19,13 +26,16 @@ def main(programFile: str = "example.cvm"):
     Data.FunctionStack = []
 
     while len(Data.CodeStack):
+        # debugCommand("!dump")
         token = Data.CodeStack.pop()
         log("token: ", token)
         if token.startswith("!"):
-            command(token)
+            debugCommand(token)
             continue
         if not runs(token):
-            Data.FrameStack.append(token)
+            data = frameData(token)
+            Data.FrameStack.append(data)
+
         log("stack:", Data.FrameStack)
 
     if len(Data.FrameStack):
@@ -33,4 +43,5 @@ def main(programFile: str = "example.cvm"):
 
 
 if __name__ == "__main__":
+    # help()
     main("test.cvm")

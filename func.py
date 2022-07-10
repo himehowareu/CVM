@@ -1,150 +1,173 @@
-from tempfile import TemporaryDirectory
+from collections import namedtuple
 from typing import Callable
 from frames import *
 import Data
-from helper import command
+from helper import debugCommand
 import helper
 
-functions: list[tuple[str, int, Callable]] = []
+command: tuple[str, list[Frame], list[Frame], Callable, str] = namedtuple(
+    "command", ["name", "args", "returns", "func", "doc"]
+)
+
+functions: list[command] = []
 
 
 def runs(token: str) -> bool:
     for fun in functions:
-        if token == fun[0]:
-            if len(Data.FrameStack) >= fun[1]:
-                if fun[2]():
-                    exit("Error while parsestring tokens")
-                return True
+        if token == fun.name:
+            if len(Data.FrameStack) >= len(fun.args):
+                if Data.matchArgs(fun.args):
+                    if fun.func():
+                        exit("Error while parsestring tokens")
+                    return True
+                else:
+                    print("match error")
+                    print(token)
+                    exit("stack setup error")
             else:
                 print("Error on token: " + token)
                 exit("FrameStack was not sett up correctly")
     return False
 
 
-def addCommand(name, args):
+def addCommand(name, args=[], returns=[]):
     def dec(func):
         global functions
-        command = (name, args, func)
-        functions.append(command)
+        newCommand = command(name, args, returns, func, func.__doc__)
+        functions.append(newCommand)
         return func
 
     return dec
 
 
-@addCommand("print", 1)
+@addCommand("print", [F_String])
 def print_():
-    print(Data.FrameStack.pop(), end="")
+    """prints out the top of the stack"""
+    print(Data.FrameStack.pop().value, end="")
 
 
-@addCommand("println", 1)
+@addCommand("println", [F_String])
 def print_newline():
-    print(Data.FrameStack.pop())
+    """prints out the top of the stack with a new line"""
+    print(Data.FrameStack.pop().value)
 
 
-@addCommand("input", 0)
+@addCommand("string", [F_Integer], [F_String])
+def string_():
+    """convert int to string on the top of the stack"""
+    temp: F_Integer = Data.FrameStack.pop()
+    temp: str = str(temp.value)
+    temp: F_String = F_String(temp)
+    Data.FrameStack.append(temp)
+
+
+@addCommand("input", [])
 def input_():
-    Data.FrameStack.push(F_String(input()))
+    """gets user input and stores it on top of the stack"""
+    Data.FrameStack.append(F_String(input()))
 
 
-@addCommand("add", 2)
+@addCommand("add", [F_Integer, F_Integer], [F_Integer])
 def add_():
+    """adds the top two ints and stores on top of stack"""
     a = Data.FrameStack.pop()
     b = Data.FrameStack.pop()
     if a.type == b.type:
-        Data.FrameStack.push(a.__class__(a.value + b.value))
+        Data.FrameStack.append(a.__class__(a.value + b.value))
 
 
-@addCommand("min", 2)
+@addCommand("min", [F_Integer, F_Integer], [F_Integer])
 def min_():
     a = Data.FrameStack.pop()
     b = Data.FrameStack.pop()
     if a.type == b.type:
-        Data.FrameStack.push(a.__class__(a.value - b.value))
+        Data.FrameStack.append(a.__class__(a.value - b.value))
 
 
-@addCommand("clone", 1)
+@addCommand("clone", [F_any], [F_any])
 def clone():
     a = Data.FrameStack.pop()
-    Data.FrameStack.push(a)
-    Data.FrameStack.push(a)
+    Data.FrameStack.append(a)
+    Data.FrameStack.append(a)
 
 
-@addCommand("swap", 1)
+@addCommand("swap", [F_Integer])
 def swap():
     a = Data.FrameStack.pop()
     if a.type == "Integer":
         b = Data.FrameStack.pop()
         c = Data.FrameStack[-a.value]
         Data.FrameStack[-a.value] = b
-        Data.FrameStack.push(c)
+        Data.FrameStack.append(c)
     else:
         return True
 
 
-@addCommand("EQ", 2)
+@addCommand("EQ", [F_Integer, F_Integer], [F_any])
 def EQ():
     a = Data.FrameStack.pop()
     b = Data.FrameStack.pop()
-    Data.FrameStack.push(a.__class__(a.value == b.value))
+    Data.FrameStack.append(a.__class__(a.value == b.value))
 
 
-@addCommand("LT", 2)
+@addCommand("LT", [F_Integer, F_Integer], [F_any])
 def LT():
     a = Data.FrameStack.pop()
     b = Data.FrameStack.pop()
-    Data.FrameStack.push(a.__class__(a.value < b.value))
+    Data.FrameStack.append(a.__class__(a.value < b.value))
 
 
-@addCommand("GT", 2)
+@addCommand("GT", [F_Integer, F_Integer], [F_any])
 def GT():
     a = Data.FrameStack.pop()
     b = Data.FrameStack.pop()
-    Data.FrameStack.push(a.__class__(a.value > b.value))
+    Data.FrameStack.append(F_Boolean(a.value > b.value))
 
 
-@addCommand("NT", 2)
+@addCommand("NT", [F_Integer, F_Integer], [F_any])
 def NT():
     a = Data.FrameStack.pop()
     b = Data.FrameStack.pop()
-    Data.FrameStack.push(a.__class__(a.value != b.value))
+    Data.FrameStack.append(a.__class__(a.value != b.value))
 
 
-@addCommand("True", 0)
+@addCommand("True", [], [F_any])
 def True_():
-    Data.FrameStack.push(F_Integer(1))
+    Data.FrameStack.append(F_Integer(1))
 
 
-@addCommand("False", 0)
+@addCommand("False", [], [F_any])
 def False_():
-    Data.FrameStack.push(F_Integer(0))
+    Data.FrameStack.append(F_Integer(0))
 
 
-@addCommand("drop", 0)
+@addCommand("drop")
 def drop():
     Data.FrameStack.pop()
 
 
-@addCommand("dropx", 1)
+@addCommand("dropx", [F_Integer])
 def dropx():
     x: int = Data.FrameStack.pop().value
     Data.FrameStack = Data.FrameStack[:x]
 
 
-@addCommand("if", 1)
+@addCommand("if", [F_Boolean])
 def if_():
     helper.getTokensTill("endIf")
-
     if Data.FrameStack.pop().value > 0:
         Data.CodeStack.extend(Data.FunctionStack)
     Data.FunctionStack = []
 
 
-@addCommand("stackSize", 0)
+@addCommand("stackSize", [], [F_Integer])
 def stackSize():
-    Data.FrameStack.append(str(len(Data.FrameStack)))
+    size: int = len(Data.FrameStack)
+    size: F_Integer = F_Integer(size)
+    Data.FrameStack.append(size)
 
 
-@addCommand("def", 0)
+@addCommand("def")
 def FuncDef():
     name: str = Data.CodeStack.pop()
     helper.getTokensTill("endDef")
@@ -152,14 +175,14 @@ def FuncDef():
     Data.FunctionStack = []
 
 
-@addCommand("func", 0)
+@addCommand("func")
 def runFunc():
     name: str = Data.CodeStack.pop()
     code: list[str] = Data.CallData[name]
     Data.CodeStack.extend(code)
 
 
-@addCommand("loop", 0)
+@addCommand("loop")
 def loop():
     helper.getTokensTill("do")
     setup: list[str] = Data.FunctionStack[::-1]

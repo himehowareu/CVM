@@ -10,4 +10,4 @@ Terminator StackNumber splitStack
 function StackNumber MapStack
 StackNumber StackNumber number memcopy
 command systemCall
-StackNumber index StackNumber index copy
+StackNumber index StackNumber index copySS

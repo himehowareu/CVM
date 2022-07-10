@@ -2,6 +2,7 @@
 
 
 loop 1 stackSize GT do
+string
 println
 endLoop
 
@@ -9,3 +10,4 @@ endLoop
 input 
 
 "welcome " print println
+

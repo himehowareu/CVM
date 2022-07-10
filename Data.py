@@ -1,15 +1,16 @@
-from frames import frame
-
-
-class Stack(list):
-    def append(self, __object):
-        super().append(frame(__object))
-
-    def push(self, Frame):
-        super().append(Frame)
-
+from frames import Frame
+from helper import log
 
 CodeStack: list[str] = []
-FrameStack = Stack()
+FrameStack: list[Frame] = []
 FunctionStack: list[str] = []
 CallData: dict[str, list[str]] = {}
+
+
+def matchArgs(args: list[Frame]) -> bool:
+    for x, arg in enumerate(args[::-1]):
+        fData = FrameStack[-(x + 1)]
+        if not arg.matches(fData):
+            log("argument type %s deosnt match stack type %s" % (arg, fData))
+            return False
+    return True
