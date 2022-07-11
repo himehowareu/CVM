@@ -2,7 +2,7 @@ from pprint import pprint
 
 
 debuging: bool = False
-
+remind:bool = False
 
 def log(info: str, data: object = None):
     """
@@ -50,9 +50,15 @@ def debugCommand(token: str) -> bool:
         pprint(FunctionStack)
         print("FrameStack")
         pprint(FrameStack)
-        # exit("memory has been dumped")
+        exit("memory has been dumped")
     if com == "func":
         pprint(FunctionStack)
+    if com == "help":
+        help()
+    if com == "debug":
+        global debuging
+        debuging = not debuging
+
     return False
 
 
@@ -88,3 +94,7 @@ def reset():
     Data.FrameStack = Data.Stack()
     Data.FunctionStack = []
     Data.CallData = {}
+
+def todo(reminder:str):
+    if remind:
+        print(reminder)

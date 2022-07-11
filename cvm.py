@@ -1,11 +1,8 @@
-from pprint import pprint
 from filters import passes
 from frames import frameData
 from func import runs
 import Data
-from helper import debuging, log, debugCommand, help
-
-# debuging = True
+from helper import log, debugCommand
 
 
 def main(programFile: str = "example.cvm"):
@@ -43,5 +40,4 @@ def main(programFile: str = "example.cvm"):
 
 
 if __name__ == "__main__":
-    # help()
     main("test.cvm")

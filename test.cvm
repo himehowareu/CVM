@@ -7,7 +7,7 @@ println
 endLoop
 
 "what is your name? " print
-input 
+input
 
 "welcome " print println
 

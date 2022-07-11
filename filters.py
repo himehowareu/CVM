@@ -1,4 +1,3 @@
-from ast import Call
 from typing import Callable
 
 
@@ -58,9 +57,9 @@ def padNewLines(source: str) -> str:
 
 @addPass("Splitting commands and joining strings")
 def splitCode(source: str) -> list[str]:
-    out = []
-    string = False
-    current = ""
+    out:list[str]= []
+    string:bool = False
+    current:str = ""
     for token in source.split(" "):
         if string:
             if token.endswith('"') and not token.endswith('\\"'):
@@ -91,7 +90,7 @@ def removeJunk(source: list[str]) -> list[str]:
     :type source: list[str]
     :return: the filtered source
     """
-    out = []
+    out:list[str] = []
     for line in source:
         if line not in ["", "\n", "\t"]:
             out.append(line)

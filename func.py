@@ -5,8 +5,8 @@ import Data
 from helper import debugCommand
 import helper
 
-command: tuple[str, list[Frame], list[Frame], Callable, str] = namedtuple(
-    "command", ["name", "args", "returns", "func", "doc"]
+command: tuple[str, list[Frame], Callable, str] = namedtuple(
+    "command", ["name", "args", "func", "doc"]
 )
 
 functions: list[command] = []
@@ -17,8 +17,7 @@ def runs(token: str) -> bool:
         if token == fun.name:
             if len(Data.FrameStack) >= len(fun.args):
                 if Data.matchArgs(fun.args):
-                    if fun.func():
-                        exit("Error while parsestring tokens")
+                    fun.func()
                     return True
                 else:
                     print("match error")
@@ -30,10 +29,10 @@ def runs(token: str) -> bool:
     return False
 
 
-def addCommand(name, args=[], returns=[]):
+def addCommand(name, args=[]):
     def dec(func):
         global functions
-        newCommand = command(name, args, returns, func, func.__doc__)
+        newCommand = command(name, args, func, func.__doc__)
         functions.append(newCommand)
         return func
 
@@ -52,7 +51,7 @@ def print_newline():
     print(Data.FrameStack.pop().value)
 
 
-@addCommand("string", [F_Integer], [F_String])
+@addCommand("string", [F_Integer])
 def string_():
     """convert int to string on the top of the stack"""
     temp: F_Integer = Data.FrameStack.pop()
@@ -67,78 +66,75 @@ def input_():
     Data.FrameStack.append(F_String(input()))
 
 
-@addCommand("add", [F_Integer, F_Integer], [F_Integer])
+@addCommand("add", [F_Integer, F_Integer])
 def add_():
     """adds the top two ints and stores on top of stack"""
-    a = Data.FrameStack.pop()
-    b = Data.FrameStack.pop()
-    if a.type == b.type:
-        Data.FrameStack.append(a.__class__(a.value + b.value))
+    a: F_Integer = Data.FrameStack.pop()
+    b: F_Integer = Data.FrameStack.pop()
+    helper.todo("imp math on ints")
+    Data.FrameStack.append(F_Integer(a.value + b.value))
 
 
-@addCommand("min", [F_Integer, F_Integer], [F_Integer])
+@addCommand("min", [F_Integer, F_Integer])
 def min_():
-    a = Data.FrameStack.pop()
-    b = Data.FrameStack.pop()
-    if a.type == b.type:
-        Data.FrameStack.append(a.__class__(a.value - b.value))
+    a: F_Integer = Data.FrameStack.pop()
+    b: F_Integer = Data.FrameStack.pop()
+    helper.todo("imp math on ints")
+    Data.FrameStack.append(F_Integer(a.value - b.value))
 
 
-@addCommand("clone", [F_any], [F_any])
+@addCommand("clone", [F_any])
 def clone():
-    a = Data.FrameStack.pop()
+    a: Frame = Data.FrameStack.pop()
     Data.FrameStack.append(a)
     Data.FrameStack.append(a)
 
 
 @addCommand("swap", [F_Integer])
 def swap():
-    a = Data.FrameStack.pop()
-    if a.type == "Integer":
-        b = Data.FrameStack.pop()
-        c = Data.FrameStack[-a.value]
-        Data.FrameStack[-a.value] = b
-        Data.FrameStack.append(c)
-    else:
-        return True
+    a: F_Integer = Data.FrameStack.pop()
+    b: Frame = Data.FrameStack.pop()
+    c: Frame = Data.FrameStack[-a.value]
+    Data.FrameStack[-a.value] = b
+    Data.FrameStack.append(c)
 
 
-@addCommand("EQ", [F_Integer, F_Integer], [F_any])
+@addCommand("EQ", [F_Integer, F_Integer])
 def EQ():
-    a = Data.FrameStack.pop()
-    b = Data.FrameStack.pop()
-    Data.FrameStack.append(a.__class__(a.value == b.value))
+    a: F_Integer = Data.FrameStack.pop()
+    b: F_Integer = Data.FrameStack.pop()
+    Data.FrameStack.append(F_Boolean(a.value == b.value))
 
 
-@addCommand("LT", [F_Integer, F_Integer], [F_any])
+@addCommand("LT", [F_Integer, F_Integer])
 def LT():
-    a = Data.FrameStack.pop()
-    b = Data.FrameStack.pop()
-    Data.FrameStack.append(a.__class__(a.value < b.value))
+    a: F_Integer = Data.FrameStack.pop()
+    b: F_Integer = Data.FrameStack.pop()
+    Data.FrameStack.append(F_Boolean(a.value < b.value))
 
 
-@addCommand("GT", [F_Integer, F_Integer], [F_any])
+@addCommand("GT", [F_Integer, F_Integer])
 def GT():
-    a = Data.FrameStack.pop()
-    b = Data.FrameStack.pop()
+    a: F_Integer = Data.FrameStack.pop()
+    b: F_Integer = Data.FrameStack.pop()
     Data.FrameStack.append(F_Boolean(a.value > b.value))
 
 
-@addCommand("NT", [F_Integer, F_Integer], [F_any])
+@addCommand("NT", [F_Integer, F_Integer])
 def NT():
-    a = Data.FrameStack.pop()
-    b = Data.FrameStack.pop()
-    Data.FrameStack.append(a.__class__(a.value != b.value))
+    a: F_Integer = Data.FrameStack.pop()
+    b: F_Integer = Data.FrameStack.pop()
+    Data.FrameStack.append(F_Boolean(a.value != b.value))
 
 
-@addCommand("True", [], [F_any])
+@addCommand("True")
 def True_():
-    Data.FrameStack.append(F_Integer(1))
+    Data.FrameStack.append(F_Boolean(True))
 
 
-@addCommand("False", [], [F_any])
+@addCommand("False")
 def False_():
-    Data.FrameStack.append(F_Integer(0))
+    Data.FrameStack.append(F_Boolean(0))
 
 
 @addCommand("drop")
@@ -160,7 +156,7 @@ def if_():
     Data.FunctionStack = []
 
 
-@addCommand("stackSize", [], [F_Integer])
+@addCommand("stackSize")
 def stackSize():
     size: int = len(Data.FrameStack)
     size: F_Integer = F_Integer(size)
@@ -203,3 +199,12 @@ def loop():
         + ["func", "loop", "endIf", "endDef", "func", "loop"]
     )
     Data.CodeStack.extend(temp[::-1])
+
+
+@addCommand("endIf")
+@addCommand("endDef")
+@addCommand("endLoop")
+def error():
+    """These should never be called,they
+    should be handled by the opening call"""
+    exit("error")

@@ -3,10 +3,10 @@ from helper import log
 
 
 class Frame(object):
-    type = "Frame"
+    type: str = "Frame"
 
     def __init__(self, token):
-        self.value = token
+        self.value: object = token
         log("created ", type(self))
 
     @classmethod
@@ -18,31 +18,31 @@ class Frame(object):
 
 
 class F_Integer(Frame):
-    type = "Integer"
+    type: str = "Integer"
 
     def __init__(self, token):
-        value = int(token)
+        value: int = int(token)
         super().__init__(value)
 
 
 class F_String(Frame):
-    type = "String"
+    type: str = "String"
 
     def __init__(self, token):
-        value = token.strip('"')
+        value: str = token.strip('"')
         super().__init__(value)
 
 
 class F_Command(Frame):
-    type = "Command"
+    type: str = "Command"
 
     def __init__(self, token):
-        value = token
+        value: str = token
         super().__init__(value)
 
 
 class F_Boolean(Frame):
-    type = "Boolean"
+    type: str = "Boolean"
 
     def __init__(self, token: bool):
         super().__init__(int(token))
@@ -53,7 +53,7 @@ class F_Boolean(Frame):
 
 
 class F_any(Frame):
-    type = "any"
+    type: str = "any"
 
     @classmethod
     def matches(self, other: "Frame") -> bool:
