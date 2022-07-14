@@ -1,19 +1,19 @@
 from pprint import pprint
 
 
-debuging: bool = False
-remind:bool = False
+debugging: bool = False
+
 
 def log(info: str, data: object = None):
     """
-    It prints the info and data if debuging is True
+    It prints the info and data if debugging is True
 
     :param info: The information you want to print
     :type info: str
     :param data: the data to be sent to the server
     :type data: object
     """
-    if debuging:
+    if debugging:
         print(info, data)
 
 
@@ -23,41 +23,42 @@ def help():
     """
     from func import functions
 
+    print("|functions | args|description |")
+    print("|---|---|")
     for func in functions:
         args = []
         for x in func.args:
             args.append(x.type)
-        print(func.name, args)
-        print("\t", func.doc)
+        if not args:
+            args = "None"
+
+        print("|%s|%s|%s|" % (func.name, args, func.doc))
 
 
 def debugCommand(token: str) -> bool:
     """
-    Dumps all the stacks for debuging
+    Dumps all the stacks for debugging
 
     :param token: str - The token that is being processed
     :type token: str
     :return: A boolean value.
     """
-    from Data import CodeStack, FrameStack, FunctionStack
+    import Data
 
     com: str = token[1:]
     if com == "dump":
         print(":::::::::::dumping memory:::::::::::")
-        print("CodeStack")
-        pprint(CodeStack)
-        print("FunctionStack")
-        pprint(FunctionStack)
-        print("FrameStack")
-        pprint(FrameStack)
+        for memStack in Data.Stack:
+            print("%s:" % (memStack.name), Data.stacks[memStack])
+        print("call", Data.CallData)
         exit("memory has been dumped")
     if com == "func":
-        pprint(FunctionStack)
+        pprint(Data.FunctionStack)
     if com == "help":
         help()
     if com == "debug":
-        global debuging
-        debuging = not debuging
+        global debugging
+        debugging = not debugging
 
     return False
 
@@ -73,7 +74,7 @@ def getTokensTill(token: str):
 
     temp: str = ""
     while True:
-        temp = Data.CodeStack.pop()
+        temp = Data.stacks[Data.Stack.Code].pop()
         if temp == token:
             break
         else:
@@ -90,11 +91,5 @@ def reset():
 
     import Data
 
-    Data.CodeStack = []
-    Data.FrameStack = Data.Stack()
-    Data.FunctionStack = []
-    Data.CallData = {}
-
-def todo(reminder:str):
-    if remind:
-        print(reminder)
+    for memStack in Data.Stack:
+        Data.stacks[memStack] = []

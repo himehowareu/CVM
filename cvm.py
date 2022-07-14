@@ -1,17 +1,9 @@
 import argparse
 from filters import passes
 from frames import frameData
-from func import runs
+from func import runToken
 import Data
 from helper import log, debugCommand
-
-
-def runToken(token: str):
-    if token.startswith("!"):
-        debugCommand(token)
-    elif not runs(token):
-        data = frameData(token)
-        Data.FrameStack.append(data)
 
 
 def loadFile(fileName: str):
@@ -28,7 +20,7 @@ def loadFile(fileName: str):
         log(filter[1])
         code = filter[0](code)
 
-    Data.CodeStack.extend(code[::-1])
+    Data.stacks[Data.Stack.Code].extend(code[::-1])
 
 
 def runFile(programFile: str = "example.cvm"):
@@ -40,14 +32,14 @@ def runFile(programFile: str = "example.cvm"):
     """
     loadFile(programFile)
 
-    Data.FunctionStack = []
+    Data.FrameStack = []
 
-    while len(Data.CodeStack):
-        token = Data.CodeStack.pop()
+    while len(Data.stacks[Data.Stack.Code]):
+        token = Data.stacks[Data.Stack.Code].pop()
         log("token: ", token)
         runToken(token)
 
-    if len(Data.FrameStack):
+    if len(Data.stacks[Data.Stack.Frame]):
         print("Stack not empty: unused value")
 
 
@@ -59,4 +51,5 @@ parser.add_argument("file", help="the program you want to run", default="test.cv
 args = parser.parse_args()
 
 if __name__ == "__main__":
+    # debugCommand("!help")
     runFile(args.file)
