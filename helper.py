@@ -22,9 +22,9 @@ def help():
     It prints the name and arguments of each function and what each function does
     """
     from func import functions
-
-    print("|functions | args|description |")
-    print("|---|---|")
+    out="|functions | args|description |"
+    out += "\n"
+    out += "|---|---|"
     for func in functions:
         args = []
         for x in func.args:
@@ -32,7 +32,8 @@ def help():
         if not args:
             args = "None"
 
-        print("|%s|%s|%s|" % (func.name, args, func.doc))
+        out+=("\n|%s|%s|%s|" % (func.name, args, func.doc))
+    return out
 
 
 def debugCommand(token: str) -> bool:

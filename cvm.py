@@ -51,5 +51,4 @@ parser.add_argument("file", help="the program you want to run", default="test.cv
 args = parser.parse_args()
 
 if __name__ == "__main__":
-    # debugCommand("!help")
     runFile(args.file)
