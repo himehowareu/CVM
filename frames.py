@@ -7,14 +7,14 @@ class Frame(object):
 
     def __init__(self, token):
         self.value: object = token
-        log("created ", type(self))
+        log("created %s with value %s" % (type(self), self.value))
 
     @classmethod
     def matches(self, other: "Frame") -> bool:
         return self.type == other.type
 
     def __repr__(self) -> str:
-        return str(self.type)
+        return str(self.value)
 
 
 class F_Integer(Frame):
@@ -31,6 +31,15 @@ class F_String(Frame):
     def __init__(self, token):
         value: str = token.strip('"')
         super().__init__(value)
+
+    def __repr__(self) -> str:
+        match self.value:
+            case " ":
+                return "<Space>"
+            case "":
+                return "<None>"
+            case default:
+                return str(self.value)
 
 
 class F_Command(Frame):
@@ -86,3 +95,7 @@ def frameData(token: str) -> Frame:
     if __codeCheck__(token):
         return F_Command(token)
     return F_Unknown(token)
+
+
+def unFrame(frame_: Frame) -> object:
+    return frame_.value

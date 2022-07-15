@@ -42,6 +42,8 @@ Chime Virtual Machine, is a project the aims to provide a simple VM for retro co
 | poke       | ['any', 'Integer', 'Integer'] | pushes a value into the given stack value index stack                                                |
 | pop        | ['Integer']                   | takes the top of the stack and puts it on to the top of the frame stack                              |
 | push       | ['any', 'Integer']            | takes the top of the stack and pushes it to another stack                                            |
+| loadFile   | ['String', 'Integer']         | loads a file into a stack one char at a time filename stack loadFile                                 |
+| splitStack | ['String', 'Integer']         | joins the stack into a string then splits it by the terminator term stack splitStack                 |
 
 ## Stacks
 
@@ -65,6 +67,12 @@ f=7
     (code to be ran here)
 
     endLoop
+
+## functions
+
+def name
+(code to ran here)
+endDef
 
 [contributors-shield]: https://img.shields.io/github/contributors/himehowareu/CVM.svg?style=for-the-badge
 [contributors-url]: https://github.com/himehowareu/CVM/graphs/contributors

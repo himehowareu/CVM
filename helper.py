@@ -22,7 +22,8 @@ def help():
     It prints the name and arguments of each function and what each function does
     """
     from func import functions
-    out="|functions | args|description |"
+
+    out = "|functions | args|description |"
     out += "\n"
     out += "|---|---|"
     for func in functions:
@@ -32,7 +33,7 @@ def help():
         if not args:
             args = "None"
 
-        out+=("\n|%s|%s|%s|" % (func.name, args, func.doc))
+        out += "\n|%s|%s|%s|" % (func.name, args, func.doc)
     return out
 
 
@@ -52,7 +53,7 @@ def debugCommand(token: str) -> bool:
         for memStack in Data.Stack:
             print("%s:" % (memStack.name), Data.stacks[memStack])
         print("call", Data.CallData)
-        exit("memory has been dumped")
+        # exit("memory has been dumped")
     if com == "func":
         pprint(Data.FunctionStack)
     if com == "help":

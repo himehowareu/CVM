@@ -1,4 +1,5 @@
 import argparse
+from pydoc import Helper
 from filters import passes
 from frames import frameData
 from func import runToken
@@ -52,3 +53,5 @@ args = parser.parse_args()
 
 if __name__ == "__main__":
     runFile(args.file)
+    # loadFile("test.cvm")
+    # debugCommand("!dump")

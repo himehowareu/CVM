@@ -80,7 +80,7 @@ def add_():
     """adds the top two ints and stores on top of stack"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: F_Integer = Data.stacks[Data.Stack.Frame].pop()
-    Data.stacks[Data.Stack.Frame].append(F_Integer(a.value + b.value))
+    Data.stacks[Data.Stack.Frame].append(F_Integer(unFrame(a) + unFrame(b)))
 
 
 @addCommand("min", [F_Integer, F_Integer])
@@ -88,7 +88,7 @@ def min_():
     """subtracts the top two numbers"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: F_Integer = Data.stacks[Data.Stack.Frame].pop()
-    Data.stacks[Data.Stack.Frame].append(F_Integer(a.value - b.value))
+    Data.stacks[Data.Stack.Frame].append(F_Integer(unFrame(a) - unFrame(b)))
 
 
 @addCommand("clone", [F_any])
@@ -103,7 +103,7 @@ def clone():
 def cloneX():
     """clone multiple items on the stack"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
-    temp: list[F_any] = Data.stacks[Data.Stack.Frame][-a.value :]
+    temp: list[F_any] = Data.stacks[Data.Stack.Frame][-unFrame(a) :]
     Data.stacks[Data.Stack.Frame].extend(temp)
 
 
@@ -112,8 +112,8 @@ def swap():
     """takes the second frame and swaps it with index from the top of the stack"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: Frame = Data.stacks[Data.Stack.Frame].pop()
-    c: Frame = Data.stacks[Data.Stack.Frame][-a.value]
-    Data.stacks[Data.Stack.Frame][-a.value] = b
+    c: Frame = Data.stacks[Data.Stack.Frame][-unFrame(a)]
+    Data.stacks[Data.Stack.Frame][-unFrame(a)] = b
     Data.stacks[Data.Stack.Frame].append(c)
 
 
@@ -122,7 +122,7 @@ def EQ():
     """tests that the top two values are equal puts a non zero value on the stack"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: F_Integer = Data.stacks[Data.Stack.Frame].pop()
-    Data.stacks[Data.Stack.Frame].append(F_Boolean(a.value == b.value))
+    Data.stacks[Data.Stack.Frame].append(F_Boolean(unFrame(a) == unFrame(b)))
 
 
 @addCommand("LT", [F_Integer, F_Integer])
@@ -130,7 +130,7 @@ def LT():
     """tests that the top two values are less then puts a non zero value on the stack"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: F_Integer = Data.stacks[Data.Stack.Frame].pop()
-    Data.stacks[Data.Stack.Frame].append(F_Boolean(a.value < b.value))
+    Data.stacks[Data.Stack.Frame].append(F_Boolean(unFrame(a) < unFrame(b)))
 
 
 @addCommand("GT", [F_Integer, F_Integer])
@@ -138,7 +138,7 @@ def GT():
     """tests that the top two values are grater then puts a non zero value on the stack"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: F_Integer = Data.stacks[Data.Stack.Frame].pop()
-    Data.stacks[Data.Stack.Frame].append(F_Boolean(a.value > b.value))
+    Data.stacks[Data.Stack.Frame].append(F_Boolean(unFrame(a) > unFrame(b)))
 
 
 @addCommand("NT", [F_Integer, F_Integer])
@@ -146,7 +146,7 @@ def NT():
     """tests that the top two values are not equal puts a non zero value on the stack"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: F_Integer = Data.stacks[Data.Stack.Frame].pop()
-    Data.stacks[Data.Stack.Frame].append(F_Boolean(a.value != b.value))
+    Data.stacks[Data.Stack.Frame].append(F_Boolean(unFrame(a) != unFrame(b)))
 
 
 @addCommand("True")
@@ -246,10 +246,10 @@ def swapStack():
     """swaps two stacks"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: F_Integer = Data.stacks[Data.Stack.Frame].pop()
-    temp1 = Data.stacks[Data.Stack[a.value]]
-    temp2 = Data.stacks[Data.Stack[b.value]]
-    Data.stacks[Data.Stack[a.value]] = temp2
-    Data.stacks[Data.Stack[b.value]] = temp1
+    temp1 = Data.stacks[Data.Stack(unFrame(a))].copy()
+    temp2 = Data.stacks[Data.Stack(unFrame(b))].copy()
+    Data.stacks[Data.Stack(unFrame(a))] = temp2
+    Data.stacks[Data.Stack(unFrame(b))] = temp1
 
 
 @addCommand("cloneStack", [F_Integer, F_Integer])
@@ -257,7 +257,7 @@ def cloneStack():
     """clone one stack to another stacks (from to)"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: F_Integer = Data.stacks[Data.Stack.Frame].pop()
-    Data.stacks[Data.Stack[a.value]] = Data.stacks[Data.Stack[b.value]]
+    Data.stacks[Data.Stack(unFrame(a))] = Data.stacks[Data.Stack[unFrame(b)]]
 
 
 @addCommand("peek", [F_Integer, F_Integer])
@@ -265,7 +265,9 @@ def peek():
     """looks at a stack and gets the vale from it index stack peek"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: F_Integer = Data.stacks[Data.Stack.Frame].pop()
-    Data.stacks[Data.Stack.Frame].append(Data.stacks[Data.Stack(a.value)][b.value])
+    Data.stacks[Data.Stack.Frame].append(
+        Data.stacks[Data.Stack(unFrame(a))][unFrame(b)]
+    )
 
 
 @addCommand("poke", [F_any, F_Integer, F_Integer])
@@ -274,14 +276,14 @@ def poke():
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     c: F_any = Data.stacks[Data.Stack.Frame].pop()
-    Data.stacks[Data.Stack(a.value)][b.value] = c
+    Data.stacks[Data.Stack(unFrame(a))][unFrame(b)] = c
 
 
 @addCommand("pop", [F_Integer])
 def pop_():
     """takes the top of the stack and puts it on to the top of the frame stack"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
-    Data.stacks[Data.Stack.Frame].append(Data.stacks[Data.Stack(a.value)])
+    Data.stacks[Data.Stack.Frame].append(Data.stacks[Data.Stack(unFrame(a))])
 
 
 @addCommand("push", [F_any, F_Integer])
@@ -289,4 +291,39 @@ def push():
     """takes the top of the stack and pushes it to another stack"""
     a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
     b: F_any = Data.stacks[Data.Stack.Frame].pop()
-    Data.stacks[Data.Stack(a.value)].append(b)
+    Data.stacks[Data.Stack(unFrame(a))].append(b)
+
+
+@addCommand("loadFile", [F_String, F_Integer])
+def loadFile():
+    """loads a file into a stack one char at a time filename stack loadFile"""
+    a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
+    b: F_String = Data.stacks[Data.Stack.Frame].pop()
+    with open(unFrame(b), "r") as file:
+        for char in file.read():
+            temp: F_String = F_String(char)
+            Data.stacks[Data.Stack(unFrame(a))].append(temp)
+
+
+@addCommand("splitStack", [F_String, F_Integer])
+def splitStack():
+    """joins the stack into a string then splits it by the terminator term stack splitStack"""
+    a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
+    b: F_String = Data.stacks[Data.Stack.Frame].pop()
+
+    for tempFrame in Data.stacks[Data.Stack(unFrame(a))]:
+        if tempFrame.type != "String":
+            exit("stack is not fully string")
+
+    temp: list[str] = list(map(unFrame, Data.stacks[Data.Stack(unFrame(a))]))
+    temp: str = "".join(temp)
+    temp: list[str] = temp.split(unFrame(b))
+    for value in temp:
+        Data.stacks[Data.Stack(unFrame(a))] = list(map(F_String, temp))
+
+
+@addCommand("flip", [F_Integer])
+def flip():
+    """reverses the order of the stack,  stack flip"""
+    a: F_Integer = Data.stacks[Data.Stack.Frame].pop()
+    Data.stacks[Data.Stack(unFrame(a))] = Data.stacks[Data.Stack(unFrame(a))][::-1]

@@ -1,23 +1,25 @@
 1 2 3 4 5 6
 
-def clearStack
-loop 1 stackSize GT do
-drop
-endLoop
-endDef
-
 
 loop 1 stackSize GT do
 string
 println
 endLoop
 
-
-"cls" #sysCall
-
 "what is your name? " print
 input
 
 "welcome " print println
 
-#func clearStack
+
+"thinking.cvm" 4 loadFile
+
+" " 4 
+
+splitStack
+
+1 4 swapStack
+
+loop 1 stackSize GT do
+println
+endLoop

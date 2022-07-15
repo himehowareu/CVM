@@ -57,15 +57,20 @@ def padNewLines(source: str) -> str:
 
 @addPass("Splitting commands and joining strings")
 def splitCode(source: str) -> list[str]:
-    out:list[str]= []
-    string:bool = False
-    current:str = ""
+    out: list[str] = []
+    string: bool = False
+    current: str = ""
     for token in source.split(" "):
         if string:
-            if token.endswith('"') and not token.endswith('\\"'):
-                out.append(current + " " + token)
+            if token.endswith('"'):
+                if current == "" and token == '"':
+                    out.append(' "')
+                else:
+                    out.append(current + " " + token)
                 current = ""
                 string = False
+            elif token == "":
+                current += " "
             else:
                 current += " " + token
 
@@ -73,9 +78,10 @@ def splitCode(source: str) -> list[str]:
             string = True
             current = token
             if token.endswith('"'):
-                string = False
-                out.append(token)
-                current = ""
+                if token != '"':
+                    string = False
+                    out.append(token)
+                current = '"'
         else:
             out.append(token)
     return out
@@ -90,7 +96,7 @@ def removeJunk(source: list[str]) -> list[str]:
     :type source: list[str]
     :return: the filtered source
     """
-    out:list[str] = []
+    out: list[str] = []
     for line in source:
         if line not in ["", "\n", "\t"]:
             out.append(line)

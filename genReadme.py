@@ -45,6 +45,13 @@ f=7
     (code to be ran here)
 
     endLoop
+
+## functions ##
+
+def name 
+(code to ran here)
+endDef
+
 """
 
 from helper import help
